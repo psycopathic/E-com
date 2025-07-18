@@ -14,13 +14,14 @@ export const signup = async (req, res) => {
 
     // 2. Check if user already exists
     const userExists = await User.findOne({ email });
+    // console.log(userExists);
     if (userExists) {
       return res.status(400).send("User already exists");
     }
 
     // 3. Create new user
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({email, password: hashedPassword, name});
+    const user = new User({ email, password: hashedPassword, name });
     await user.save();
 
     // 4. Generate auth tokens
@@ -45,15 +46,6 @@ export const signup = async (req, res) => {
   }
 };
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * @description Login user and generate auth tokens
- * @function
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
- * @returns {Object} JSON response with user details and auth tokens
- */
-/*******  aade5bd7-4f72-44a7-96ef-0cb7ade2a89a  *******/
 export const login = async (req, res) => {
   res.send("this is login page");
 };
