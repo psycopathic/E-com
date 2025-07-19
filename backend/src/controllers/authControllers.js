@@ -47,8 +47,30 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  res.send("this is login page");
+  try {
+    const {email, password} = req.body;
+    const user = User.findOne({email});
+    if(!user){
+     res.status(400).send("User not found");
+    }
+    const isMatch = await bcrypt.compare(password,user.password);
+    if(!isMatch){
+      res.status(400).send("Invalid credentials");
+    }
+    const {accessToken,refreshToken} = generateToken(user._id);
+    await storeRefreshToken(user._id,refreshToken);
+    setCookies(res,refreshToken,accessToken);
+    res.json({
+      _id:user._id,
+      name:user.name,
+      email:user.email,
+      role:user.role
+    },{message:"Login successful"});
+  } catch (error) {
+    console.log("Error in login controller", error.message);
+    res.status(500).json({ message: error.message });
+  }
 };
 export const logout = async (req, res) => {
-  res.send("this is logout page");
+  
 };
