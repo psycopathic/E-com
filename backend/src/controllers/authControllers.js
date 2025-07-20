@@ -109,14 +109,20 @@ export const refreshToken = async (req, res) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      res.status(400).json({ message: "Refresh token not found" });
+      return res.status(400).json({ message: "Refresh token not found" }); // ✅ return here
     }
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const decoded = await jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
     const storedToken = await redis.get(`refresh token :${decoded.userId}`);
     if (storedToken !== refreshToken) {
-      return res.status(400).json({ message: "Invalid refresh token" });
+      return res.status(400).json({ message: "Invalid refresh token" }); // ✅ return here
     }
-    const accessToken = jwt.sign(
+
+    const accessToken = await jwt.sign(
       { userId: decoded.userId },
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "15m" }
@@ -129,9 +135,19 @@ export const refreshToken = async (req, res) => {
       maxAge: 15 * 60 * 1000,
     });
 
-    res.json({ message: "Token refreshed successfully" });
+    return res.json({ message: "Token refreshed successfully" }); // ✅ good to return here too
   } catch (error) {
     console.log("Error in refreshToken controller", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
+};
+
+export const profile = async (req, res) => {
+	try {
+		res.json(req.user);
+	} catch (error) {
+		res.status(500).json({ message: "Server error", error: error.message });
+	}
 };
