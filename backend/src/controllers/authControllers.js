@@ -3,6 +3,8 @@ import { generateToken } from "../utils/token.js";
 import { storeRefreshToken } from "../utils/storeRefreshToken.js";
 import { setCookies } from "../utils/setCookies.js";
 import bcrypt from "bcryptjs";
+import { redis } from "../lib/redis.js";
+import jwt from "jsonwebtoken";
 
 export const signup = async (req, res) => {
   try {
@@ -48,29 +50,56 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const {email, password} = req.body;
-    const user = User.findOne({email});
-    if(!user){
-     res.status(400).send("User not found");
+    const { email, password } = req.body;
+    console.log(email, password);
+    const user = await User.findOne({ email });
+    // console.log("user")
+    if (!user) {
+      console.log(1);
+      res.status(400).send("User not found");
     }
-    const isMatch = await bcrypt.compare(password,user.password);
-    if(!isMatch){
-      res.status(400).send("Invalid credentials");
+    // console.log(2)
+    const isMatch = await bcrypt.compare(password, user.password);
+    // console.log(isMatch)
+    if (!isMatch) {
+      // console.log(3)
+      return res.status(400).send("Invalid credentials");
     }
-    const {accessToken,refreshToken} = generateToken(user._id);
-    await storeRefreshToken(user._id,refreshToken);
-    setCookies(res,refreshToken,accessToken);
+    // console.log(4)
+    const { accessToken, refreshToken } = generateToken(user._id);
+    // console.log(5);
+    await storeRefreshToken(user._id, refreshToken);
+    // console.log(6)
+    setCookies(res, refreshToken, accessToken);
+    // console.log(7)
     res.json({
-      _id:user._id,
-      name:user.name,
-      email:user.email,
-      role:user.role
-    },{message:"Login successful"});
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      message: "Login successful",
+    });
   } catch (error) {
+    console.log(8);
     console.log("Error in login controller", error.message);
     res.status(500).json({ message: error.message });
   }
 };
 export const logout = async (req, res) => {
-  
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (refreshToken) {
+      const decoded = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET
+      );
+      await redis.del(`refresh token :${decoded.userId}`);
+    }
+    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
+    res.status(200).json({ message: "Logout successful" });
+  } catch (error) {
+    console.log("Error in logout controller", error.message);
+		res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
