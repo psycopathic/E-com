@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import authRouter from './src/routes/authRoutes.js';
 import productRouter from './src/routes/productRoutes.js';
+import cartRouter from './src/routes/cartRoutes.js';
 import cors from 'cors';
 import { connectDB } from './src/lib/db.js';
 import cookieParser from 'cookie-parser';
@@ -16,6 +17,7 @@ app.use(cookieParser());
 
 app.use('/api/auth',authRouter);
 app.use('/api/products', productRouter);
+app.use('/api/cart', cartRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
