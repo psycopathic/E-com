@@ -6,6 +6,7 @@ import productRouter from './src/routes/productRoutes.js';
 import cartRouter from './src/routes/cartRoutes.js';
 import couponRouter from './src/routes/couponRoutes.js';
 import paymentRouter from './src/routes/paymentRoutes.js';
+import analyticsRouter from './src/routes/analyticsRoutes.js';
 
 import cors from 'cors';
 import { connectDB } from './src/lib/db.js';
@@ -24,6 +25,7 @@ app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/coupon', couponRouter);
 app.use('/api/payment', paymentRouter);
+app.use('/api/analytics', analyticsRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
