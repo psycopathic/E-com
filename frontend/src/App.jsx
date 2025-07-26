@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Routes, Navigate } from "react-router-dom";
+
+import Adminpage from "./pages/Adminpage";
 import Signupage from "./pages/Signupage";
 import Loginpage from "./pages/Loginpage";
 import Homepage from "./pages/Homepage";
@@ -30,7 +32,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/signup" element={!user?<Signupage />:<Navigate to="/" />} />
-            <Route path="/login" element={!user?<Loginpage />:<Navigate to="/" />} />
+            <Route path="/login" element={!user ? (<Loginpage />) : (<Navigate to="/" />)}/>
+
+            <Route path="/secretDashboard" element={user && user.role === "admin"?<Adminpage/>:<Navigate to="/login" />} />
           </Routes>
         </div>
         <Toaster/>
