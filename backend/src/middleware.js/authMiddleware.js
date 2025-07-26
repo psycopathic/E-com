@@ -1,5 +1,6 @@
 //checks of user is authenticated by checking
 import User from "../models/userModel.js";
+import jwt from "jsonwebtoken";
 export const protectedRoutes = async(req, res, next) => {
   try {
     const accessToken = req.cookies.accessToken;
