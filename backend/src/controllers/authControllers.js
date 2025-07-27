@@ -56,7 +56,7 @@ export const login = async (req, res) => {
     // console.log("user")
     if (!user) {
       console.log(1);
-      res.status(400).send("User not found");
+      return res.status(400).send("User not found");
     }
     // console.log(2)
     const isMatch = await bcrypt.compare(password, user.password);
@@ -135,7 +135,12 @@ export const refreshToken = async (req, res) => {
       maxAge: 15 * 60 * 1000,
     });
 
-    return res.json({ message: "Token refreshed successfully" }); // ✅ good to return here too
+    return res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    }); // ✅ good to return here too
   } catch (error) {
     console.log("Error in refreshToken controller", error.message);
     return res
@@ -145,9 +150,10 @@ export const refreshToken = async (req, res) => {
 };
 
 export const profile = async (req, res) => {
-	try {
-		res.json(req.user);
-	} catch (error) {
-		res.status(500).json({ message: "Server error", error: error.message });
-	}
+  try {
+    res.json(req.user);
+    console.log(req.user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
 };
