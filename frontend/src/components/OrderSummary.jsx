@@ -10,6 +10,10 @@ const OrderSummary = () => {
   const formattedSubtotal = subtotal.toFixed(2);
   const formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
+
+  const handlePayment = () => {
+    console.log("payment");
+  };
   return (
     <>
       <motion.div
@@ -64,6 +68,16 @@ const OrderSummary = () => {
           >
             Proceed to Checkout
           </motion.button>
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-sm font-normal text-gray-400">or</span>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-sm font-medium text-emerald-400 underline hover:text-emerald-300 hover:no-underline"
+            >
+              Continue Shopping
+              <MoveRight size={16} />
+            </Link>
+          </div>
         </div>
       </motion.div>
     </>
