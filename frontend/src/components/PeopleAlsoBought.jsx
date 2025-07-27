@@ -3,7 +3,7 @@ import ProductCard from "./ProductCard";
 import axios from "../lib/axios";
 import toast from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner";
-
+import React from "react";
 const PeopleAlsoBought = () => {
 	const [recommendations, setRecommendations] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
