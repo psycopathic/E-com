@@ -4,7 +4,7 @@ import {redis} from '../lib/redis.js'
 export const storeRefreshToken = async (userId,refreshToken) => { 
     try {
         // console.log(1)
-        await redis.set(`refresh token :${userId}`,refreshToken,"EX",7*24*60*60);//7 days expiration
+        await redis.set(`refresh_token :${userId}`,refreshToken,"EX",7*24*60*60);//7 days expiration
         // console.log(1)
     } catch (error) {
         // console.log(2)
