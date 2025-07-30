@@ -5,7 +5,7 @@ export const getAnalytics = async (req, res) => {
     try {
         const analyticsData = await getAnalyticsData();
         const endDate = new Date();
-        const stateDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);  
+        const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);  
         const dailySalesData = await getDailySalesData(startDate, endDate);
         res.json({
 			analyticsData,

@@ -58,20 +58,20 @@ export const login = async (req, res) => {
       console.log(1);
       return res.status(400).send("User not found");
     }
-    // console.log(2)
+    console.log(2)
     const isMatch = await bcrypt.compare(password, user.password);
     // console.log(isMatch)
     if (!isMatch) {
-      // console.log(3)
+      console.log(3)
       return res.status(400).send("Invalid credentials");
     }
-    // console.log(4)
+    console.log(4)
     const { accessToken, refreshToken } = generateToken(user._id);
-    // console.log(5);
+    console.log(5);
     await storeRefreshToken(user._id, refreshToken);
-    // console.log(6)
+    console.log(6)
     setCookies(res, refreshToken, accessToken);
-    // console.log(7)
+    console.log(7)
     res.json({
       _id: user._id,
       name: user.name,

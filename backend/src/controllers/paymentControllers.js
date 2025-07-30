@@ -39,11 +39,11 @@ export const createCheckoutSession = async (req, res) => {
         );
       }
     }
-    //sesion creation
+    //session creation
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
-      mode: payment,
+      mode: "payment",
       success_url: `${process.env.CLIENT_URL}/purchase-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL}/purchase-cancel`,
       discounts: coupon
@@ -65,7 +65,7 @@ export const createCheckoutSession = async (req, res) => {
         ),
       },
     });
-    if (totalAmount >= 2000) {
+    if (totalAmount >= 20000) {
       await createNewCoupon(req.user._id);
     }
     res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
@@ -80,8 +80,21 @@ export const createCheckoutSession = async (req, res) => {
 export const checkoutSession = async (req, res) => {
   try {
     const { sessionId } = req.body;
+
+    // ✅ Check if order with this session already exists
+    const existingOrder = await Order.findOne({ stripeSessionId: sessionId });
+    if (existingOrder) {
+      return res.status(200).json({
+        success: true,
+        message: "Order already exists.",
+        orderId: existingOrder._id,
+      });
+    }
+
     const session = await stripe.checkout.sessions.retrieve(sessionId);
+
     if (session.payment_status === "paid") {
+      // ✅ Deactivate coupon if used
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
@@ -93,8 +106,11 @@ export const checkoutSession = async (req, res) => {
           }
         );
       }
-      //create a new order
+
+      // ✅ Parse products
       const products = JSON.parse(session.metadata.products);
+
+      // ✅ Create and save new order
       const newOrder = new Order({
         user: session.metadata.userId,
         products: products.map((product) => ({
@@ -105,13 +121,19 @@ export const checkoutSession = async (req, res) => {
         totalAmount: session.amount_total / 100,
         stripeSessionId: sessionId,
       });
+
       await newOrder.save();
 
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message:
           "Payment successful, order created, and coupon deactivated if used.",
         orderId: newOrder._id,
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Session is not marked as paid.",
       });
     }
   } catch (error) {
