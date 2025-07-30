@@ -19,7 +19,7 @@ router.get("/featured", getFeaturedProducts);
 router.get("/category/:category", getProductByCategory);
 router.get("/recommendations", getRecommendedProducts);
 router.post("/", protectedRoutes, adminRoute, createProducts);
-router.post("/:id", protectedRoutes, adminRoute, toggleFeaturedProduct);
+router.patch("/:id", protectedRoutes, adminRoute, toggleFeaturedProduct);
 router.delete("/:id", protectedRoutes, adminRoute, deleteProducts);
 
 export default router;
