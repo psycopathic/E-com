@@ -1,0 +1,28 @@
+{
+  "name": "e-com",
+  "version": "1.0.0",
+  "description": "this is an e-commerce application using MERN, zustand, with admin page",
+  "homepage": "https://github.com/psycopathic/E-com#readme",
+  "bugs": {
+    "url": "https://github.com/psycopathic/E-com/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/psycopathic/E-com.git"
+  },
+  "license": "ISC",
+  "author": "psycopathic",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "client": "cd frontend && npm run dev",
+    "server": "cd backend && nodemon index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  },
+  "dependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
