@@ -29,7 +29,7 @@ app.use('/api/auth',authRouter);
 app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/coupon', couponRouter);
-app.use('/api/payment', paymentRouter);     t 
+app.use('/api/payment', paymentRouter);
 app.use('/api/analytics', analyticsRouter);
 
 app.get('/', (req, res) => {
