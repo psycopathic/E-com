@@ -24,12 +24,18 @@ const port = process.env.PORT || 5000;
 
 app.use(cors({
     origin: process.env.NODE_ENV === "production" 
-        ? process.env.FRONTEND_URL 
+        ? process.env.CLIENT_URL 
         : "http://localhost:5173",
     credentials:true
 }))
 app.use(express.json({limit:"100mb"}));
 app.use(cookieParser());
+
+// Serve static files in production BEFORE API routes
+if(process.env.NODE_ENV === "production") {
+    const distPath = path.join(__dirname, '../frontend/dist');
+    app.use(express.static(distPath));
+}
 
 app.use('/api/auth',authRouter);
 app.use('/api/products', productRouter);
@@ -38,19 +44,11 @@ app.use('/api/coupon', couponRouter);
 app.use('/api/payment', paymentRouter);
 app.use('/api/analytics', analyticsRouter);
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
+// Handle React routing - return index.html for all non-API routes in production
 if(process.env.NODE_ENV === "production") {
     const distPath = path.join(__dirname, '../frontend/dist');
-    app.use(express.static(distPath));
-    
-    // Handle React routing - return index.html for all non-API routes
     app.get('*', (req, res) => {
-        if (!req.path.startsWith('/api')) {
-            res.sendFile(path.join(distPath, 'index.html'));
-        }
+        res.sendFile(path.join(distPath, 'index.html'));
     });
 } else {
     app.get('/', (req, res) => {
