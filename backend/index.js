@@ -8,20 +8,26 @@ import couponRouter from './src/routes/couponRoutes.js';
 import paymentRouter from './src/routes/paymentRoutes.js';
 import analyticsRouter from './src/routes/analyticsRoutes.js';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import { connectDB } from './src/lib/db.js';
 import cookieParser from 'cookie-parser';
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors(
-    {
-        origin:'http://localhost:5173',
-        credentials:true
-    }
-));
+
+app.use(cors({
+    origin: process.env.NODE_ENV === "production" 
+        ? process.env.FRONTEND_URL 
+        : "http://localhost:5173",
+    credentials:true
+}))
 app.use(express.json({limit:"100mb"}));
 app.use(cookieParser());
 
@@ -35,6 +41,22 @@ app.use('/api/analytics', analyticsRouter);
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
+
+if(process.env.NODE_ENV === "production") {
+    const distPath = path.join(__dirname, '../frontend/dist');
+    app.use(express.static(distPath));
+    
+    // Handle React routing - return index.html for all non-API routes
+    app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api')) {
+            res.sendFile(path.join(distPath, 'index.html'));
+        }
+    });
+} else {
+    app.get('/', (req, res) => {
+        res.send('Backend is running! Frontend at http://localhost:5173')
+    });
+}
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

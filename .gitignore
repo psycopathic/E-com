@@ -3,3 +3,5 @@ backend/.env
 backend/.env.sample
 node_modules
 frontend/.env.sample
+DEPLOYMENT.md
+render.yaml
