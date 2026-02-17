@@ -47,7 +47,7 @@ app.use('/api/analytics', analyticsRouter);
 // Handle React routing - return index.html for all non-API routes in production
 if(process.env.NODE_ENV === "production") {
     const distPath = path.join(__dirname, '../frontend/dist');
-    app.get('*', (req, res) => {
+    app.get('/*', (req, res) => {
         res.sendFile(path.join(distPath, 'index.html'));
     });
 } else {
